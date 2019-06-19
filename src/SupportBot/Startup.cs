@@ -1,34 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using BotCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Integration.AspNet.Core;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace SupportBot
 {
 	public class Startup
 	{
-		// This method gets called by the runtime. Use this method to add services to the container.
-		// For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
 		public void ConfigureServices(IServiceCollection services)
 		{
+			services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+			services.AddSingleton<ICredentialProvider, ConfigurationCredentialProvider>();
+			services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
+
+			// Change to external state storage
+			services.AddSingleton<IStorage, MemoryStorage>();
+			services.AddSingleton<UserState>();
+			services.AddSingleton<ConversationState>();
+
+			services.AddSingleton<RootDialog>();
+			services.AddSingleton<SupportDialog>();
+			services.AddTransient<IBot, DialogSupportBot<RootDialog>>();
 		}
 
-		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
 		public void Configure(IApplicationBuilder app, IHostingEnvironment env)
 		{
 			if (env.IsDevelopment())
 			{
 				app.UseDeveloperExceptionPage();
+				app.UseDefaultFiles();
+				app.UseStaticFiles();
 			}
 
-			app.Run(async (context) =>
-			{
-				await context.Response.WriteAsync("Hello World!");
-			});
+			app.UseMvc();
 		}
 	}
 }
