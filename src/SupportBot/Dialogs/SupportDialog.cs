@@ -113,7 +113,7 @@ namespace SupportBot
 
 			if (!sessionState.Connected)
 			{
-				await stepContext.Context.SendActivityAsync("Waiting on a user to request support...");
+				await stepContext.Context.SendActivityAsync("Not currently connected, waiting on a user to request support...");
 			}
 			else
 			{
@@ -124,7 +124,7 @@ namespace SupportBot
 
 			// Loop back to recieve next message
 
-			return await stepContext.ReplaceDialogAsync(nameof(SupportDialog), true, cancellationToken);
+			return await stepContext.ReplaceDialogAsync(nameof(SupportDialog), contextState, cancellationToken);
 		}
 
 		private async Task<DialogTurnResult> EndDialogWithCleanupAsync(WaterfallStepContext stepContext,

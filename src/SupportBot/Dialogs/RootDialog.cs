@@ -34,6 +34,6 @@ namespace SupportBot
 		}
 
 		private Activity CreateThankyouMessage(IActivity activity) =>
-			((Activity)activity).CreateReply("Your handoff session has finished, attempting to return you to the queue");
+			((Activity)activity).CreateReply("Your handoff session has finished, attempting to return you to the queue, please type anything to mark yourself as ready.");
 	}
 }

@@ -27,6 +27,7 @@ namespace HandoffUserBot
 			services.AddSingleton<ConversationProxyService>();
 
 			services.AddSingleton<RootDialog>();
+			services.AddSingleton<EchoDialog>();
 			services.AddSingleton<HandoffDialog>();
 			services.AddTransient<IBot, DailogHandoffUserBot<RootDialog>>();
 		}

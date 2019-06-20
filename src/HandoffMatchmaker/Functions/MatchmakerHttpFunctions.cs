@@ -72,7 +72,7 @@ namespace HandoffMatchmaker
 
 		[FunctionName(nameof(GetSessionAsync))]
 		public async Task<IActionResult> GetSessionAsync(
-			[HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "session/{sessionId}")]
+			[HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "session/{sessionId}")]
 				HttpRequest req,
 			string sessionId,
 			ILogger log)

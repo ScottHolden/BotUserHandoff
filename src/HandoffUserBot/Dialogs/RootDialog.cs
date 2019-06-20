@@ -7,10 +7,12 @@ namespace HandoffUserBot
 {
 	public class RootDialog : ComponentDialog
 	{
-		public RootDialog(HandoffDialog handoffDialog)
+		public RootDialog(HandoffDialog handoffDialog,
+							EchoDialog echoDialog)
 			: base(nameof(RootDialog))
 		{
 			AddDialog(handoffDialog);
+			AddDialog(echoDialog);
 
 			AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
 			{
@@ -23,35 +25,7 @@ namespace HandoffUserBot
 
 		private async Task<DialogTurnResult> InitialStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
 		{
-			return await stepContext.BeginDialogAsync(nameof(HandoffDialog), null, cancellationToken);
-		}
-
-		protected override async Task<DialogTurnResult> OnBeginDialogAsync(DialogContext innerDc, object options, CancellationToken cancellationToken = default)
-		{
-			DialogTurnResult result = await InterruptAsync(innerDc, cancellationToken);
-			if (result != null)
-			{
-				return result;
-			}
-
-			return await base.OnBeginDialogAsync(innerDc, options, cancellationToken);
-		}
-
-		private async Task<DialogTurnResult> InterruptAsync(DialogContext innerDc, CancellationToken cancellationToken)
-		{
-			if (innerDc.Context.Activity.Type == ActivityTypes.Message)
-			{
-				string text = innerDc.Context.Activity.Text.ToLowerInvariant();
-
-				switch (text)
-				{
-					case "cancel":
-					case "quit":
-						await innerDc.Context.SendActivityAsync($"Cancelling", cancellationToken: cancellationToken);
-						return await innerDc.CancelAllDialogsAsync();
-				}
-			}
-			return null;
+			return await stepContext.BeginDialogAsync(nameof(EchoDialog), null, cancellationToken);
 		}
 
 		private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)

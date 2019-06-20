@@ -144,7 +144,7 @@ namespace HandoffUserBot
 
 			// Loop back to recieve next message
 
-			return await stepContext.ReplaceDialogAsync(nameof(HandoffDialog), true, cancellationToken);			
+			return await stepContext.ReplaceDialogAsync(nameof(HandoffDialog), contextState, cancellationToken);			
 		}
 
 		private async Task<DialogTurnResult> EndDialogWithCleanupAsync(WaterfallStepContext stepContext,

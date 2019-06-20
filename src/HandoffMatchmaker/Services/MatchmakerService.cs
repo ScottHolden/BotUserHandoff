@@ -35,7 +35,7 @@ namespace HandoffMatchmaker
 		private const string CloudLockKey = "inprogress";
 
 		private string NewMatchmakerSessionId() => MatchmakerPrefix + Guid.NewGuid().ToString("D");
-		private static readonly Regex MatchmakerSessionIdRegex = new Regex($@"^{MatchmakerPrefix}-[0-9a-f]{{8}}-[0-9a-f]{{4}}-[0-9a-f]{{4}}-[0-9a-f]{{4}}-[0-9a-f]{{12}}");
+		private static readonly Regex MatchmakerSessionIdRegex = new Regex($@"^{MatchmakerPrefix}[0-9a-f]{{8}}-[0-9a-f]{{4}}-[0-9a-f]{{4}}-[0-9a-f]{{4}}-[0-9a-f]{{12}}$");
 		private bool ValidateMatchmakerSessionIdFormat(string matchmakerSessionId) => MatchmakerSessionIdRegex.IsMatch(matchmakerSessionId);
 
 		public async Task<string> NewSessionAsync(string proxyId, PartyType partyType)
@@ -167,7 +167,7 @@ namespace HandoffMatchmaker
 			});
 		}
 
-		private Task SendUserWelcome(ProxyEndpoint endpoint) => SendProxyMessageAsync(endpoint, "You have been connected with a support human");
+		private Task SendUserWelcome(ProxyEndpoint endpoint) => SendProxyMessageAsync(endpoint, "You have been connected with a support agent");
 		private async Task SendSupportConnected(ProxyEndpoint endpoint, SessionState userSession)
 		{
 			await SendProxyMessageAsync(endpoint, "Connected to a user, grabbing background info...");
