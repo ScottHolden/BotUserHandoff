@@ -37,7 +37,7 @@ namespace HandoffUserBot
 
 			if (!(stepContext.Options is bool looping && looping))
 			{
-				messagePrompt.Prompt = MessageFactory.Text("As an example of normal interactions with a bot, your messages will be echo'ed back, reservsed");
+				messagePrompt.Prompt = MessageFactory.Text("As an example of normal interactions with a bot, your messages will be echo'ed back, reversed");
 			}
 
 			return await stepContext.PromptAsync(nameof(TextPrompt), messagePrompt);
