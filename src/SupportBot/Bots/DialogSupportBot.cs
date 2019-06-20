@@ -46,6 +46,6 @@ namespace SupportBot
 		}
 
 		private Activity CreateWelcomeMessage(IActivity activity) =>
-			((Activity)activity).CreateReply("Welcome, you are now connected to the support bot, you will be messaged when a user is connected.");
+			((Activity)activity).CreateReply("Welcome, you are now connected to the support bot. To begin, send any message, and you will be put into the queue to recieve support requests");
 	}
 }

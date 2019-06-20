@@ -1,0 +1,10 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "UserPartyCallbackUrl": "http://localhost:52349/api/handoff",
+    "UserPartyMatchmakerKey": "HandoffUserBotDevKey",
+    "SupportPartyCallbackUrl": "http://localhost:52350/api/handoff",
+    "SupportPartyMatchmakerKey": "SupportBotDevKey",
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true"
+  }
+}

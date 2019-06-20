@@ -23,6 +23,9 @@ namespace HandoffUserBot
 			services.AddSingleton<UserState>();
 			services.AddSingleton<ConversationState>();
 
+			services.AddSingleton<MatchmakerService>();
+			services.AddSingleton<ConversationProxyService>();
+
 			services.AddSingleton<RootDialog>();
 			services.AddSingleton<HandoffDialog>();
 			services.AddTransient<IBot, DailogHandoffUserBot<RootDialog>>();

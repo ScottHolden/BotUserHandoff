@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using HandoffMatchmaker.Services;
+using Microsoft.Azure.Functions.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 
 [assembly: FunctionsStartup(typeof(HandoffMatchmaker.Startup))]
 
@@ -11,9 +11,12 @@ namespace HandoffMatchmaker
 		public override void Configure(IFunctionsHostBuilder builder)
 		{
 			builder.Services.AddHttpClient();
-			builder.Services.AddSingleton((s) => {
-				return new CosmosClient(Environment.GetEnvironmentVariable("COSMOSDB_CONNECTIONSTRING"));
-			});
-		}
+			builder.Services.AddSingleton<MatchmakerService>();
+			builder.Services.AddSingleton<ICloudLock, AzureBlobCloudLock>();
+			builder.Services.AddSingleton<IMatchmakeEventCallback, AzureQueueMatchmakeEventCallback>();
+			builder.Services.AddSingleton<IPartyEndpointProvider, ConfigPartyEndpointProvider>();
+			builder.Services.AddSingleton<IRowStorage, AzureTableRowStorage>();
+			builder.Services.AddSingleton<IPartyKeyProvider, ConfigPartyKeyProvider>();
+		} 
 	}
 }

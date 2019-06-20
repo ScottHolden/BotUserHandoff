@@ -5,8 +5,8 @@ namespace HandoffMatchmaker.Services
 {
 	class ConfigPartyEndpointProvider : IPartyEndpointProvider
 	{
-		private const string UserPartyKeyName = "UserPartyMatchmakerKey";
-		private const string SupportPartyKeyName = "SupportPartyMatchmakerKey";
+		private const string UserPartyKeyName = "UserPartyCallbackUrl";
+		private const string SupportPartyKeyName = "SupportPartyCallbackUrl";
 		private readonly IConfiguration _configuration;
 
 		public ConfigPartyEndpointProvider(IConfiguration configuration)

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace HandoffMatchmaker
 {
-	public class MatchmakerService
+	public class MatchmakerService : IDisposable
 	{
 		private const string ProxyIdHeaderName = "x-handoff-proxyid";
 		private readonly IRowStorage _rowStorage;
@@ -167,17 +167,20 @@ namespace HandoffMatchmaker
 			});
 		}
 
-		private Task SendUserWelcome(ProxyEndpoint endpoint) => SendProxyMessageAsync(endpoint, "Connected to a supporter");
+		private Task SendUserWelcome(ProxyEndpoint endpoint) => SendProxyMessageAsync(endpoint, "You have been connected with a support human");
 		private async Task SendSupportConnected(ProxyEndpoint endpoint, SessionState userSession)
 		{
-			await SendProxyMessageAsync(endpoint, "Connected to a user, grabbing background info...\n-------------------------");
+			await SendProxyMessageAsync(endpoint, "Connected to a user, grabbing background info...");
+			await SendProxyMessageAsync(endpoint, "---");
+			
 
 			IEnumerable<string> info = await GetSessionBackgroundAsync(userSession.SessionId);
 
 			foreach(string s in info)
 				await SendProxyMessageAsync(endpoint, s);
 
-			await SendProxyMessageAsync(endpoint, "-------------------------\nReady to talk:");
+			await SendProxyMessageAsync(endpoint, "---");
+			await SendProxyMessageAsync(endpoint, "Ready to talk:");
 		}
 
 		private static readonly SemaphoreSlim _localSemaphone = new SemaphoreSlim(1);
@@ -210,6 +213,11 @@ namespace HandoffMatchmaker
 		}
 
 		private Task<IEnumerable<SessionState>> GetReadySessionsAsync() =>
-			_rowStorage.QueryRowsAsync<SessionState>(nameof(SessionState.Connected), bool.FalseString);
+			_rowStorage.QueryRowsAsync<SessionState>(nameof(SessionState.Connected), false);
+
+		public void Dispose()
+		{
+			_httpClient.Dispose();
+		}
 	}
 }

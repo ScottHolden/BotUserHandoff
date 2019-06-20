@@ -23,6 +23,9 @@ namespace SupportBot
 			services.AddSingleton<UserState>();
 			services.AddSingleton<ConversationState>();
 
+			services.AddSingleton<MatchmakerService>();
+			services.AddSingleton<ConversationProxyService>();
+
 			services.AddSingleton<RootDialog>();
 			services.AddSingleton<SupportDialog>();
 			services.AddTransient<IBot, DialogSupportBot<RootDialog>>();

@@ -1,72 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using HandoffMatchmaker.Services;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Configuration;
-using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 
 namespace HandoffMatchmaker
 {
-	public static class TableStorageExtensions
-	{
-		public static async Task<(bool success, T value)> GetRowAsync<T>(this CloudTable table, string partitionKey, string rowKey) where T : new()
-		{
-			TableResult tableResult = await table.ExecuteAsync(TableOperation.Retrieve<AzureTableRowStorageAdapter<T>>(partitionKey, rowKey));
-			if (tableResult.Result != null)
-			{
-				T value = ((AzureTableRowStorageAdapter<T>)tableResult.Result).GetValue();
-				return (true, value);
-			}
-			return (false, default);
-		}
-	}
-	internal class AzureTableRowStorageAdapter<T> : ITableEntity where T : new()
-	{
-		private readonly T _internalObject;
-		public string PartitionKey { get; set; }
-		public string RowKey { get; set; }
-		public DateTimeOffset Timestamp { get; set; }
-		public string ETag
-		{
-			get => (_internalObject is IETagged tagged) ? tagged.TransientETag : internalETag;
-			set
-			{
-				if (_internalObject is IETagged tagged)
-					tagged.TransientETag = value;
-				else
-					internalETag = value;
-			}
-		}
-		private string internalETag;
-
-		public AzureTableRowStorageAdapter()
-			: this(new T())
-		{
-		}
-
-		public AzureTableRowStorageAdapter(T innerObject)
-		{
-			_internalObject = innerObject;
-		}
-
-		public T GetValue() => _internalObject;
-
-		public void ReadEntity(IDictionary<string, EntityProperty> properties, OperationContext operationContext)
-		{
-			TableEntity.ReadUserObject(_internalObject, properties, operationContext);
-		}
-
-		public IDictionary<string, EntityProperty> WriteEntity(OperationContext operationContext)
-		{
-			return TableEntity.WriteUserObject(_internalObject, operationContext);
-		}
-	}
 	public class AzureTableRowStorage : IRowStorage
 	{
 		private const string FixedRowKey = "fixedvalue";
@@ -102,13 +43,19 @@ namespace HandoffMatchmaker
 			return value;
 		}
 
-		public async Task<IEnumerable<T>> QueryRowsAsync<T>(string column, string value) where T : new()
+		public Task<IEnumerable<T>> QueryRowsAsync<T>(string column, string value) where T : new() =>
+			QueryRowsAsync<T>(TableQuery.GenerateFilterCondition(column, QueryComparisons.Equal, value));
+
+		public Task<IEnumerable<T>> QueryRowsAsync<T>(string column, bool value) where T : new() =>
+			QueryRowsAsync<T>(TableQuery.GenerateFilterConditionForBool(column, QueryComparisons.Equal, value));
+
+		private async Task<IEnumerable<T>> QueryRowsAsync<T>(string filter) where T : new()
 		{
 			CloudTable table = await GetReferenceAsync<T>();
 
 			TableQuery<AzureTableRowStorageAdapter<T>> query =
 				new TableQuery<AzureTableRowStorageAdapter<T>>()
-					.Where(TableQuery.GenerateFilterCondition(column, QueryComparisons.Equal, value));
+					.Where(filter);
 
 			List<T> results = new List<T>();
 
@@ -130,7 +77,12 @@ namespace HandoffMatchmaker
 		{
 			CloudTable table = await GetReferenceAsync<T>();
 
-			AzureTableRowStorageAdapter<T> value = new AzureTableRowStorageAdapter<T>(o);
+			AzureTableRowStorageAdapter<T> value = new AzureTableRowStorageAdapter<T>(o)
+			{
+				PartitionKey = key,
+				RowKey = FixedRowKey,
+				Timestamp = DateTimeOffset.UtcNow
+			};
 
 			await table.ExecuteAsync(TableOperation.InsertOrReplace(value));
 		}

@@ -3,18 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace BotCore
 {
 	public class MatchmakerService
 	{
 		private const string PartyAuthHeader = "x-handoff-partykey";
+		private const string MatchmakerUrlKey = "MatchmakerUrl";
+		private const string MatchmakerKeyKey = "MatchmakerKey";
+		
 		private readonly HttpClient _httpClient;
 
-		public MatchmakerService()
+		public MatchmakerService(IConfiguration configuration)
 		{
-			string matchmakerUrl = "";
-			string matchmakerKey = "";
+			string matchmakerUrl = configuration.GetValue<string>(MatchmakerUrlKey);
+			string matchmakerKey = configuration.GetValue<string>(MatchmakerKeyKey);
 
 			_httpClient = new HttpClient
 			{
