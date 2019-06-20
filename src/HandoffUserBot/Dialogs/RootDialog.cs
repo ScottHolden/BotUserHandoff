@@ -1,6 +1,5 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 
@@ -8,13 +7,9 @@ namespace HandoffUserBot
 {
 	public class RootDialog : ComponentDialog
 	{
-		private readonly UserState _userState;
-
-		public RootDialog(UserState userState, HandoffDialog handoffDialog)
+		public RootDialog(HandoffDialog handoffDialog)
 			: base(nameof(RootDialog))
 		{
-			_userState = userState;
-
 			AddDialog(handoffDialog);
 
 			AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]

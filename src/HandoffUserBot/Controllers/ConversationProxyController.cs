@@ -3,10 +3,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using BotCore;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Bot.Builder;
 using Microsoft.Extensions.Primitives;
 
-namespace SupportBot
+namespace HandoffUserBot
 {
 	[Route("api/handoff")]
 	[ApiController]
