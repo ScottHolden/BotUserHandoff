@@ -73,6 +73,8 @@ namespace HandoffUserBot
 						ProxyId = proxyId
 					};
 
+					stepContext.Values.Add(HandoffState, newContextState);
+
 					// Add message to the background info
 					// TODO: Refactor
 					IStatePropertyAccessor<List<string>> conversationStateAccessors = _conversationState.CreateProperty<List<string>>(MessageHistoryStateKey);
@@ -81,11 +83,13 @@ namespace HandoffUserBot
 
 					if (conversationData != null && conversationData.Count > 0)
 					{
-						await _matchmaker.AddSessionBackground(sessionId, conversationData);
+						await _matchmaker.AddSessionBackgroundAsync(sessionId, conversationData);
 
 						// Clear the current history once it has been passed to the matchmaker
 						await conversationStateAccessors.DeleteAsync(stepContext.Context);
 					}
+
+					_log.LogInformation("Set up new handoff session");
 
 					// Let the user know
 					messagePrompt.Prompt = MessageFactory.Text("You are being connected to a support agent, please wait...");
@@ -123,16 +127,20 @@ namespace HandoffUserBot
 														cancellationToken);
 			}
 
-			// Let the user know that we haven't connected yet
-
 			if (!sessionState.Connected)
 			{
+				// Let the user know that we haven't connected yet
+
 				await stepContext.Context.SendActivityAsync("Waiting on a support agent, but i'll pass the message on");
+
+				await _matchmaker.AddSessionBackgroundAsync(contextState.MatchmakerSessionId, new[] { "User: " + text });
 			}
+			else
+			{
+				// Pass through the message to the matchmaker service
 
-			// Pass through the message to the matchmaker service
-
-			await _matchmaker.SendMessageAsync(contextState.MatchmakerSessionId, text);
+				await _matchmaker.SendMessageAsync(contextState.MatchmakerSessionId, text);
+			}
 
 			// Loop back to recieve next message
 

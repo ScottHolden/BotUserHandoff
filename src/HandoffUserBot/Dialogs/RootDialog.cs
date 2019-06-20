@@ -26,7 +26,7 @@ namespace HandoffUserBot
 			return await stepContext.BeginDialogAsync(nameof(HandoffDialog), null, cancellationToken);
 		}
 
-		protected override async Task<DialogTurnResult> OnBeginDialogAsync(DialogContext innerDc, object options, CancellationToken cancellationToken = default(CancellationToken))
+		protected override async Task<DialogTurnResult> OnBeginDialogAsync(DialogContext innerDc, object options, CancellationToken cancellationToken = default)
 		{
 			DialogTurnResult result = await InterruptAsync(innerDc, cancellationToken);
 			if (result != null)

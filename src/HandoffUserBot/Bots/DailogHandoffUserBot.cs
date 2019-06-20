@@ -23,7 +23,7 @@ namespace HandoffUserBot
 			Logger = logger;
 		}
 
-		public override async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
 		{
 			await base.OnTurnAsync(turnContext, cancellationToken);
 

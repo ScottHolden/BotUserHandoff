@@ -1,32 +1,66 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BotCore
 {
 	public class MatchmakerService
 	{
-		private HttpClient _hc;
+		private const string PartyAuthHeader = "x-handoff-partykey";
+		private readonly HttpClient _httpClient;
+
+		public MatchmakerService()
+		{
+			string matchmakerUrl = "";
+			string matchmakerKey = "";
+
+			_httpClient = new HttpClient
+			{
+				BaseAddress = new Uri(matchmakerUrl)
+			};
+			_httpClient.DefaultRequestHeaders.Add(PartyAuthHeader, matchmakerKey);
+		}
+
 		public async Task<string> NewSessionAsync(string proxyId)
 		{
-			return Guid.NewGuid().ToString();
+			NewSessionRequest newSessionRequest = new NewSessionRequest
+			{
+				ProxyId = proxyId
+			};
+			using(HttpResponseMessage response = await _httpClient.PostAsJsonAsync("session", newSessionRequest))
+			{
+				response.EnsureSuccessStatusCode();
+
+				NewSessionResponse newSessionResponse = await response.Content.ReadJsonAsAsync<NewSessionResponse>();
+
+				return newSessionResponse.SessionId;
+			}
 		}
 		public async Task<SessionState> GetSessionAsync(string matchmakerSessionId)
 		{
-			using(HttpRequestMessage request = new HttpRequestMessage())
+			using (HttpResponseMessage response = await _httpClient.GetAsync($"session/{matchmakerSessionId}"))
 			{
-				return null;
+				response.EnsureSuccessStatusCode();
+
+				return await response.Content.ReadJsonAsAsync<SessionState>();
 			}
 		}
 		public async Task SendMessageAsync(string matchmakerSessionId, string text)
 		{
-
+			using(StringContent content = new StringContent(text))
+			using (HttpResponseMessage response = await _httpClient.PostAsync($"session/{matchmakerSessionId}/message", content))
+			{
+				response.EnsureSuccessStatusCode();
+			}
 		}
-		public async Task AddSessionBackground(string matchmakerSessionId, IEnumerable<string> info)
+		public async Task AddSessionBackgroundAsync(string matchmakerSessionId, IEnumerable<string> info)
 		{
-
+			using (HttpResponseMessage response = await _httpClient.PostAsJsonAsync($"session/{matchmakerSessionId}/background", info.ToArray()))
+			{
+				response.EnsureSuccessStatusCode();
+			}
 		}
 	}
 }

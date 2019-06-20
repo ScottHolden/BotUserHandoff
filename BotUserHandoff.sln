@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28705.295
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HandoffUserBot", "src\HandoffUserBot\HandoffUserBot.csproj", "{FB449E05-8D20-4E77-91F7-BBE45823EE25}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HandoffUserBot", "src\HandoffUserBot\HandoffUserBot.csproj", "{FB449E05-8D20-4E77-91F7-BBE45823EE25}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupportBot", "src\SupportBot\SupportBot.csproj", "{043E014B-DD53-4ACE-8E7B-14026097A84B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SupportBot", "src\SupportBot\SupportBot.csproj", "{043E014B-DD53-4ACE-8E7B-14026097A84B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HandoffMatchmaker", "src\HandoffMatchmaker\HandoffMatchmaker.csproj", "{CE967C62-4767-45D7-B8F6-0AE2E97ADA3A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HandoffMatchmaker", "src\HandoffMatchmaker\HandoffMatchmaker.csproj", "{CE967C62-4767-45D7-B8F6-0AE2E97ADA3A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BotCore", "src\BotCore\BotCore.csproj", "{014DB21E-EE44-4BC8-9A06-308D413FEB24}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BotCore", "src\BotCore\BotCore.csproj", "{014DB21E-EE44-4BC8-9A06-308D413FEB24}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
