@@ -91,6 +91,24 @@ namespace HandoffMatchmaker
 			return new JsonResult(session);
 		}
 
+		[FunctionName(nameof(EndSessionAsync))]
+		public async Task<IActionResult> EndSessionAsync(
+			[HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "session/{sessionId}")]
+				HttpRequest req,
+			string sessionId,
+			ILogger log)
+		{
+			// Validate keys
+			if (!TryValidateRequest(req, out PartyType _))
+				return new UnauthorizedResult();
+
+			log.LogInformation("Ending session");
+
+			await _matchmakerService.EndSessionAsync(sessionId);
+
+			return new OkResult();
+		}
+
 		[FunctionName(nameof(SendMessageAsync))]
 		public async Task<IActionResult> SendMessageAsync(
 			[HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "session/{sessionId}/message")]

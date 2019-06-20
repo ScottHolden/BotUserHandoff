@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using BotCore;
@@ -105,7 +106,17 @@ namespace SupportBot
 			{
 				return await EndDialogWithCleanupAsync(stepContext,
 														contextState,
-														"Matchmaker couldn't find this conversation",
+														sessionState.Connected ? "Handoff session has been closed" : null,
+														cancellationToken);
+			}
+
+			// Exit out if the conversation is over
+
+			if (text.Trim().Equals("/quit", StringComparison.OrdinalIgnoreCase))
+			{
+				return await EndDialogWithCleanupAsync(stepContext,
+														contextState,
+														"You have left the handoff",
 														cancellationToken);
 			}
 
@@ -132,6 +143,9 @@ namespace SupportBot
 																	string message,
 																	CancellationToken cancellationToken)
 		{
+			if (contextState != null && !string.IsNullOrWhiteSpace(contextState.MatchmakerSessionId))
+				await _matchmaker.EndSessionAsync(contextState.MatchmakerSessionId);
+
 			if (contextState != null && !string.IsNullOrWhiteSpace(contextState.ProxyId))
 				await _conversationProxy.RemoveConversationAsync(contextState.ProxyId, cancellationToken);
 

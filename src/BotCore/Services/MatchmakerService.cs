@@ -66,5 +66,12 @@ namespace BotCore
 				response.EnsureSuccessStatusCode();
 			}
 		}
+		public async Task EndSessionAsync(string matchmakerSessionId)
+		{
+			using (HttpResponseMessage response = await _httpClient.DeleteAsync($"session/{matchmakerSessionId}"))
+			{
+				response.EnsureSuccessStatusCode();
+			}
+		}
 	}
 }

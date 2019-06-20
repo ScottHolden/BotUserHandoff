@@ -59,6 +59,23 @@ namespace HandoffMatchmaker
 
 			return session.SessionId;
 		}
+
+		public async Task EndSessionAsync(string matchmakerSessionId)
+		{
+			SessionState sessionState = await _rowStorage.GetRowAsync<SessionState>(matchmakerSessionId);
+
+			sessionState.Valid = false;
+
+			await _rowStorage.UpdateRowAsync(sessionState.SessionId, sessionState);
+
+			SessionState remoteSessionState = await _rowStorage.GetRowAsync<SessionState>(sessionState.RemoteSessionId);
+
+			remoteSessionState.Valid = false;
+
+			await _rowStorage.UpdateRowAsync(remoteSessionState.SessionId, remoteSessionState);
+
+			await SendProxyMessageAsync(sessionState.Remote, "Handoff has been closed by the other party.");
+		}
 		public async Task<SessionStateResponse> GetSessionAsync(string matchmakerSessionId)
 		{
 			if (!ValidateMatchmakerSessionIdFormat(matchmakerSessionId))
@@ -155,8 +172,10 @@ namespace HandoffMatchmaker
 		{
 			userSession.Connected = true;
 			userSession.Remote = supportSession.Local;
+			userSession.RemoteSessionId = supportSession.SessionId;
 			supportSession.Connected = true;
 			supportSession.Remote = userSession.Local;
+			supportSession.RemoteSessionId = userSession.SessionId;
 			await Task.WhenAll(new[] {
 				_rowStorage.UpdateRowAsync(userSession.SessionId, userSession),
 				_rowStorage.UpdateRowAsync(supportSession.SessionId, supportSession)
